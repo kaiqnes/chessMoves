@@ -11,22 +11,23 @@ func main() {
 		randomPieces = 4
 	)
 
-	var (
-		table models.Table
-	)
+	// Create an empty table NxN
+	table := models.NewTable(tableSize)
 
-	table = models.NewTable(tableSize)
-
+	// Create own target piece, a Queen (with a random XY position)
 	queen := models.Piece{Title: "Queen", Position: *models.NewRandomPosition(tableSize)}
 	queen.PrintPosition()
 
+	// Place the queen in our table
 	_ = table.SetPiece(queen.Position)
 
-	// set few random pieces
+	// Place few other random pieces to block our queen movements
 	table.SetRandomPieces(randomPieces)
 
+	// Print table with all pieces placed (0 = empty square, 1 = filled square)
 	table.PrintTable()
 
+	// Check possible squares that queen can be moved
 	possibleMoves := checkPossibleMoves(queen, table)
 
 	fmt.Println(len(possibleMoves), "possible moves found")
@@ -48,7 +49,7 @@ func checkPossibleMoves(piece models.Piece, table models.Table) []models.Locatio
 		possibleMoves []models.Location
 	)
 
-	for i := 1; i < len(table[0]); i++ { // Check all moves at once
+	for i := 1; i < len(table[0]); i++ { // Check all directions at once
 		possibleMoves = checkDirection(piece.Position.X, piece.Position.Y+i, table, "east", &east, possibleMoves)             //look at east, starting from piece
 		possibleMoves = checkDirection(piece.Position.X, piece.Position.Y-i, table, "west", &west, possibleMoves)             //look at west, starting from piece
 		possibleMoves = checkDirection(piece.Position.X-i, piece.Position.Y, table, "north", &north, possibleMoves)           //look at north, starting from piece
