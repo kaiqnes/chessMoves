@@ -30,6 +30,11 @@ func main() {
 	// Check possible squares that queen can be moved
 	possibleMoves := checkPossibleMoves(queen, table)
 
+	// Print obtained results
+	printResults(possibleMoves)
+}
+
+func printResults(possibleMoves []models.Location) {
 	fmt.Println(len(possibleMoves), "possible moves found")
 	for _, move := range possibleMoves {
 		fmt.Println(move)
