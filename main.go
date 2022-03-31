@@ -64,7 +64,8 @@ func checkPossibleMoves(piece models.Piece, table models.Table) []models.Locatio
 		}
 	}
 
-	return sortMoves(possibleMoves)
+	//return possibleMoves
+	return sortMoves(possibleMoves) // Return possible movements sorted by main direction
 }
 
 func sortMoves(arr []models.Location) []models.Location {
@@ -83,13 +84,20 @@ func sortByDirections(a models.Location, b models.Location) bool {
 }
 
 func checkDirection(x, y int, table models.Table, direction string, canContinue *bool, moves []models.Location) []models.Location {
-	if x >= 0 && x < len(table[0]) && y >= 0 && y < len(table[0]) && *canContinue {
-		if table[x][y] != 1 {
-			*canContinue = true
-			return append(moves, models.Location{Direction: direction, Position: models.Position{X: x, Y: y}})
+	if *canContinue {
+		if coordinatesRemainInTable(x, y, len(table)) {
+			if table[x][y] != 1 {
+				*canContinue = true
+				return append(moves, models.Location{Direction: direction, Position: models.Position{X: x, Y: y}})
+			}
+			fmt.Printf("a wild piece was found blocking the queen's movement to the %s at [%d,%d]\n", direction, x, y)
 		}
-		fmt.Printf("a blocking piece was found at [%d,%d]\n", x, y)
+		*canContinue = false
 	}
-	*canContinue = false
 	return moves
+}
+
+func coordinatesRemainInTable(x int, y int, tableLen int) bool {
+	return x >= 0 && x < tableLen &&
+		y >= 0 && y < tableLen
 }
