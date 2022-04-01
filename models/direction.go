@@ -11,17 +11,17 @@ const (
 	EAST
 	WEST
 	NORTHEAST
-	NORTHWEST
 	SOUTHEAST
+	NORTHWEST
 	SOUTHWEST
 )
 
 var (
 	Directions = map[string]int{
-		"east":      NORTH,
-		"west":      SOUTH,
-		"north":     EAST,
-		"south":     WEST,
+		"east":      EAST,
+		"west":      WEST,
+		"north":     NORTH,
+		"south":     SOUTH,
 		"northEast": NORTHEAST,
 		"northWest": NORTHWEST,
 		"southEast": SOUTHEAST,
