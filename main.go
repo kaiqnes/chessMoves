@@ -5,43 +5,58 @@ import (
 	"fmt"
 )
 
+const (
+	printBoard           = true
+	printBlockPiecesInfo = true
+	printQueenPosition   = true
+	randomQueenPosition  = true
+	boardSize            = 8
+	randomPieces         = 16
+)
+
 func main() {
-	const (
-		tableSize    = 8
-		randomPieces = 4
-	)
+	// Create an empty board NxN
+	board := models.NewBoard(boardSize)
 
-	// Create an empty table NxN
-	table := models.NewTable(tableSize)
+	var queen models.Piece
+	if randomQueenPosition {
+		// Create own target piece, a Queen (with a random XY position)
+		queen = models.Piece{Title: "Queen", Position: *models.NewRandomPosition(boardSize)}
+	} else {
+		// Create own target piece, a Queen (with a specific XY position)
+		queen = models.Piece{Title: "Queen", Position: *models.NewCoordinate(3, 3)}
+	}
 
-	// Create own target piece, a Queen (with a random XY position)
-	queen := models.Piece{Title: "Queen", Position: *models.NewRandomPosition(tableSize)}
-	queen.PrintPosition()
+	if printQueenPosition {
+		queen.PrintPosition()
+	}
 
-	// Place the queen in our table
-	_ = table.SetPiece(queen.Position)
+	// Place the queen in our board
+	_ = board.SetPiece(queen.Position)
 
 	// Place few other random pieces to block our queen movements
-	table.SetRandomPieces(randomPieces)
+	board.SetRandomPieces(randomPieces)
 
-	// Print table with all pieces placed (0 = empty square, 1 = filled square)
-	table.PrintTable()
+	// Print board with all pieces placed (0 = empty square, 1 = filled square)
+	if printBoard {
+		board.Print()
+	}
 
 	// Check possible squares that queen can be moved
-	possibleMoves := checkPossibleMoves(queen, table)
+	possibleMoves := checkPossibleMoves(queen, board)
 
 	// Print obtained results
 	printResults(possibleMoves)
 }
 
-func printResults(possibleMoves []models.Location) {
+func printResults(possibleMoves []models.Direction) {
 	fmt.Println(len(possibleMoves), "possible moves found")
-	for _, move := range possibleMoves {
-		fmt.Println(move)
+	for _, movement := range possibleMoves {
+		fmt.Println(movement)
 	}
 }
 
-func checkPossibleMoves(piece models.Piece, table models.Table) []models.Location {
+func checkPossibleMoves(piece models.Piece, board models.Board) []models.Direction {
 	var (
 		east          = true
 		west          = true
@@ -51,19 +66,22 @@ func checkPossibleMoves(piece models.Piece, table models.Table) []models.Locatio
 		northWest     = true
 		southEast     = true
 		southWest     = true
-		possibleMoves []models.Location
+		possibleMoves []models.Direction
+		move          = models.NewDirection(piece)
 	)
 
-	for i := 1; i < len(table[0]); i++ { // Check all directions at once
-		possibleMoves = checkDirection(piece.Position.X, piece.Position.Y+i, table, "east", &east, possibleMoves)             //look at east, starting from piece
-		possibleMoves = checkDirection(piece.Position.X, piece.Position.Y-i, table, "west", &west, possibleMoves)             //look at west, starting from piece
-		possibleMoves = checkDirection(piece.Position.X-i, piece.Position.Y, table, "north", &north, possibleMoves)           //look at north, starting from piece
-		possibleMoves = checkDirection(piece.Position.X+i, piece.Position.Y, table, "south", &south, possibleMoves)           //look at south, starting from piece
-		possibleMoves = checkDirection(piece.Position.X-i, piece.Position.Y+i, table, "northEast", &northEast, possibleMoves) //look at northEast, starting from piece
-		possibleMoves = checkDirection(piece.Position.X-i, piece.Position.Y-i, table, "northWest", &northWest, possibleMoves) //look at northWest, starting from piece
-		possibleMoves = checkDirection(piece.Position.X+i, piece.Position.Y+i, table, "southEast", &southEast, possibleMoves) //look at southEast, starting from piece
-		possibleMoves = checkDirection(piece.Position.X+i, piece.Position.Y-i, table, "southWest", &southWest, possibleMoves) //look at southWest, starting from piece
+	// Check all directions at once - O(n)
+	for sqr := 1; sqr < len(board[0]); sqr++ {
+		possibleMoves = checkDirection(move.ToNorth(sqr), board, &north, possibleMoves)         //look at east, starting from piece
+		possibleMoves = checkDirection(move.ToSouth(sqr), board, &south, possibleMoves)         //look at west, starting from piece
+		possibleMoves = checkDirection(move.ToEast(sqr), board, &east, possibleMoves)           //look at north, starting from piece
+		possibleMoves = checkDirection(move.ToWest(sqr), board, &west, possibleMoves)           //look at south, starting from piece
+		possibleMoves = checkDirection(move.ToNorthEast(sqr), board, &northEast, possibleMoves) //look at northEast, starting from piece
+		possibleMoves = checkDirection(move.ToNorthWest(sqr), board, &northWest, possibleMoves) //look at northWest, starting from piece
+		possibleMoves = checkDirection(move.ToSouthEast(sqr), board, &southEast, possibleMoves) //look at southEast, starting from piece
+		possibleMoves = checkDirection(move.ToSouthWest(sqr), board, &southWest, possibleMoves) //look at southWest, starting from piece
 
+		// Validate if it is possible to continue in any direction
 		if !(west || east || north || south || northEast || northWest || southEast || southWest) {
 			break
 		}
@@ -73,7 +91,7 @@ func checkPossibleMoves(piece models.Piece, table models.Table) []models.Locatio
 	return sortMoves(possibleMoves) // Return possible movements sorted by main direction
 }
 
-func sortMoves(arr []models.Location) []models.Location {
+func sortMoves(arr []models.Direction) []models.Direction {
 	for i := 0; i < len(arr)-1; i++ {
 		for j := 0; j < len(arr)-i-1; j++ {
 			if sortByDirections(arr[j], arr[j+1]) {
@@ -84,25 +102,32 @@ func sortMoves(arr []models.Location) []models.Location {
 	return arr
 }
 
-func sortByDirections(a models.Location, b models.Location) bool {
-	return models.Directions[a.Direction] > models.Directions[b.Direction]
+func sortByDirections(a models.Direction, b models.Direction) bool {
+	return models.Directions[a.Name] > models.Directions[b.Name]
 }
 
-func checkDirection(x, y int, table models.Table, direction string, canContinue *bool, moves []models.Location) []models.Location {
+func checkDirection(direction models.Direction, board models.Board, canContinue *bool, moves []models.Direction) []models.Direction {
 	if *canContinue {
-		if coordinatesRemainInTable(x, y, len(table)) {
-			if table[x][y] != 1 {
-				*canContinue = true
-				return append(moves, models.Location{Direction: direction, Position: models.Position{X: x, Y: y}})
+		var (
+			x = direction.Coordinate.X
+			y = direction.Coordinate.Y
+		)
+
+		if coordinatesRemainInBoard(x, y, len(board)) {
+			if board[x][y] != 1 {
+				return append(moves, models.Direction{Name: direction.Name, Coordinate: models.Coordinate{X: x, Y: y}})
 			}
-			fmt.Printf("a wild piece was found blocking the queen's movement to the %s at [%d,%d]\n", direction, x, y)
+			if printBlockPiecesInfo {
+				fmt.Printf("a wild piece was found blocking the queen's movement to the %s at [%d,%d]\n", direction.Name, x, y)
+			}
 		}
 		*canContinue = false
 	}
 	return moves
 }
 
-func coordinatesRemainInTable(x int, y int, tableLen int) bool {
+// coordinatesRemainInBoard returns true if coordinates (x, y) results in a square inside the board
+func coordinatesRemainInBoard(x int, y int, tableLen int) bool {
 	return x >= 0 && x < tableLen &&
 		y >= 0 && y < tableLen
 }

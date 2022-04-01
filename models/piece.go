@@ -4,7 +4,7 @@ import "fmt"
 
 type Piece struct {
 	Title    string
-	Position Position
+	Position Coordinate
 }
 
 func (p *Piece) PrintPosition() {

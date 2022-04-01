@@ -29,25 +29,97 @@ var (
 	}
 )
 
-type Position struct {
-	X, Y int
+type Direction struct {
+	Name       string
+	Coordinate Coordinate
 }
 
-func NewRandomPosition(tableSize int) *Position {
+func (c *Coordinate) SetRandomPosition(tableSize int) {
 	rand.Seed(time.Now().UnixNano())
-	return &Position{
-		X: rand.Intn(tableSize),
-		Y: rand.Intn(tableSize),
+	c.X = rand.Intn(tableSize)
+	c.Y = rand.Intn(tableSize)
+}
+
+func NewDirection(piece Piece) *Direction {
+	return &Direction{Coordinate: Coordinate{X: piece.Position.X, Y: piece.Position.Y}}
+}
+
+func (d *Direction) ToNorth(squares int) Direction {
+	return Direction{
+		Name: "north",
+		Coordinate: Coordinate{
+			X: d.Coordinate.X - squares,
+			Y: d.Coordinate.Y,
+		},
 	}
 }
 
-func (p *Position) SetRandomPosition(tableSize int) {
-	rand.Seed(time.Now().UnixNano())
-	p.X = rand.Intn(tableSize)
-	p.Y = rand.Intn(tableSize)
+func (d *Direction) ToSouth(squares int) Direction {
+	return Direction{
+		Name: "south",
+		Coordinate: Coordinate{
+			X: d.Coordinate.X + squares,
+			Y: d.Coordinate.Y,
+		},
+	}
 }
 
-type Location struct {
-	Direction string
-	Position  Position
+func (d *Direction) ToEast(squares int) Direction {
+	return Direction{
+		Name: "east",
+		Coordinate: Coordinate{
+			X: d.Coordinate.X,
+			Y: d.Coordinate.Y + squares,
+		},
+	}
+}
+
+func (d *Direction) ToWest(squares int) Direction {
+	return Direction{
+		Name: "west",
+		Coordinate: Coordinate{
+			X: d.Coordinate.X,
+			Y: d.Coordinate.Y - squares,
+		},
+	}
+}
+
+func (d *Direction) ToNorthWest(squares int) Direction {
+	return Direction{
+		Name: "northWest",
+		Coordinate: Coordinate{
+			X: d.Coordinate.X - squares,
+			Y: d.Coordinate.Y - squares,
+		},
+	}
+}
+
+func (d *Direction) ToSouthWest(squares int) Direction {
+	return Direction{
+		Name: "southWest",
+		Coordinate: Coordinate{
+			X: d.Coordinate.X + squares,
+			Y: d.Coordinate.Y - squares,
+		},
+	}
+}
+
+func (d *Direction) ToNorthEast(squares int) Direction {
+	return Direction{
+		Name: "northEast",
+		Coordinate: Coordinate{
+			X: d.Coordinate.X - squares,
+			Y: d.Coordinate.Y + squares,
+		},
+	}
+}
+
+func (d *Direction) ToSouthEast(squares int) Direction {
+	return Direction{
+		Name: "southEast",
+		Coordinate: Coordinate{
+			X: d.Coordinate.X + squares,
+			Y: d.Coordinate.Y + squares,
+		},
+	}
 }
