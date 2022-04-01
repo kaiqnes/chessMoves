@@ -72,10 +72,10 @@ func checkPossibleMoves(piece models.Piece, board models.Board) []models.Directi
 
 	// Check all directions at once - O(n)
 	for sqr := 1; sqr < len(board[0]); sqr++ {
-		possibleMoves = checkDirection(move.ToNorth(sqr), board, &north, possibleMoves)         //look at east, starting from piece
-		possibleMoves = checkDirection(move.ToSouth(sqr), board, &south, possibleMoves)         //look at west, starting from piece
-		possibleMoves = checkDirection(move.ToEast(sqr), board, &east, possibleMoves)           //look at north, starting from piece
-		possibleMoves = checkDirection(move.ToWest(sqr), board, &west, possibleMoves)           //look at south, starting from piece
+		possibleMoves = checkDirection(move.ToNorth(sqr), board, &north, possibleMoves)         //look at north, starting from piece
+		possibleMoves = checkDirection(move.ToSouth(sqr), board, &south, possibleMoves)         //look at south, starting from piece
+		possibleMoves = checkDirection(move.ToEast(sqr), board, &east, possibleMoves)           //look at east, starting from piece
+		possibleMoves = checkDirection(move.ToWest(sqr), board, &west, possibleMoves)           //look at west, starting from piece
 		possibleMoves = checkDirection(move.ToNorthEast(sqr), board, &northEast, possibleMoves) //look at northEast, starting from piece
 		possibleMoves = checkDirection(move.ToNorthWest(sqr), board, &northWest, possibleMoves) //look at northWest, starting from piece
 		possibleMoves = checkDirection(move.ToSouthEast(sqr), board, &southEast, possibleMoves) //look at southEast, starting from piece
