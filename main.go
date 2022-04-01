@@ -91,6 +91,7 @@ func checkPossibleMoves(piece models.Piece, board models.Board) []models.Directi
 	return sortMoves(possibleMoves) // Return possible movements sorted by main direction
 }
 
+// sortMoves sort directions using an implementation of bubble sort, considering models.Directions map - O(n²)
 func sortMoves(arr []models.Direction) []models.Direction {
 	for i := 0; i < len(arr)-1; i++ {
 		for j := 0; j < len(arr)-i-1; j++ {
