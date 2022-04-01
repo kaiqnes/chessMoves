@@ -10,6 +10,7 @@ const (
 	printBlockPiecesInfo = true
 	printQueenPosition   = true
 	randomQueenPosition  = true
+	sortResults          = true
 	boardSize            = 8
 	randomPieces         = 16
 )
@@ -87,8 +88,10 @@ func checkPossibleMoves(piece models.Piece, board models.Board) []models.Directi
 		}
 	}
 
-	//return possibleMoves
-	return sortMoves(possibleMoves) // Return possible movements sorted by main direction
+	if sortResults {
+		return sortMoves(possibleMoves) // Return possible movements sorted by main direction
+	}
+	return possibleMoves
 }
 
 // sortMoves sort directions using an implementation of bubble sort, considering models.Directions map - O(n²)
