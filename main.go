@@ -89,8 +89,10 @@ func checkPossibleMoves(piece models.Piece, board models.Board) []models.Directi
 	}
 
 	if sortResults {
-		return sortMoves(possibleMoves) // Return possible movements sorted by main direction
+		// Return possible movements sorted by main direction
+		return sortMoves(possibleMoves)
 	}
+	// Return possible movements
 	return possibleMoves
 }
 
