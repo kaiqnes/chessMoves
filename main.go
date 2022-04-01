@@ -108,17 +108,13 @@ func sortByDirections(a models.Direction, b models.Direction) bool {
 
 func checkDirection(direction models.Direction, board models.Board, canContinue *bool, moves []models.Direction) []models.Direction {
 	if *canContinue {
-		var (
-			x = direction.Coordinate.X
-			y = direction.Coordinate.Y
-		)
-
-		if coordinatesRemainInBoard(x, y, len(board)) {
-			if board[x][y] != 1 {
-				return append(moves, models.Direction{Name: direction.Name, Coordinate: models.Coordinate{X: x, Y: y}})
+		if coordinatesRemainInBoard(direction.Coordinate.X, direction.Coordinate.Y, len(board)) {
+			if board[direction.Coordinate.X][direction.Coordinate.Y] != 1 {
+				return append(moves, direction)
 			}
 			if printBlockPiecesInfo {
-				fmt.Printf("a wild piece was found blocking the queen's movement to the %s at [%d,%d]\n", direction.Name, x, y)
+				fmt.Printf("a wild piece was found blocking the queen's movement to the %s at [%d,%d]\n",
+					direction.Name, direction.Coordinate.X, direction.Coordinate.Y)
 			}
 		}
 		*canContinue = false

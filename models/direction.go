@@ -41,7 +41,7 @@ func (c *Coordinate) SetRandomPosition(tableSize int) {
 }
 
 func NewDirection(piece Piece) *Direction {
-	return &Direction{Coordinate: Coordinate{X: piece.Position.X, Y: piece.Position.Y}}
+	return &Direction{Coordinate: *NewCoordinate(piece.Position.X, piece.Position.Y)}
 }
 
 func (d *Direction) ToNorth(squares int) Direction {
